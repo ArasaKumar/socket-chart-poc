@@ -31,7 +31,7 @@ const broadcastNodes = () => {
     setInterval(() => {
         getNodes().then((data) => {
             console.debug("⌚ emitting Node event", data)
-            io.emit("time", data.recordset);
+            io.emit("node", data.recordset);
         }
         ).catch((err) => {
             io.emit("error", err);
