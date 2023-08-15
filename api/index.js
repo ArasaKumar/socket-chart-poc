@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http'
 import { Server } from 'socket.io'
 import { getNodes } from './data_access.js';
+import { ltreeToParentChild } from './helper.js';
 const app = express();
 const server = http.createServer(app);
 
@@ -12,17 +13,17 @@ const io = new Server(server, {
 });
 
 app.get('/', (req, res) => {
-    res.send("Hello")
+    res.send("Server is up and running")
 });
 
 io.on('connection', (socket) => {
     console.log('a user connected');
 });
 
-const broadcastTime = ()=>{
+const broadcastTime = () => {
     setInterval(() => {
         const data = new Date().toISOString();
-        console.debug("⌚ emitting time event", data)
+        // console.debug("⌚ emitting time event", data)
         io.emit("time", data);
     }, 1000);
 }
@@ -30,8 +31,8 @@ const broadcastTime = ()=>{
 const broadcastNodes = () => {
     setInterval(() => {
         getNodes().then((data) => {
-            console.debug("⌚ emitting Node event", data)
-            io.emit("node", data.recordset);
+            // console.debug("⌚ emitting Node event", data)
+            io.emit("node", ltreeToParentChild(data.recordset));
         }
         ).catch((err) => {
             io.emit("error", err);

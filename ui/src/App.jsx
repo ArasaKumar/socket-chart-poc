@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { socket } from './socket'
+import OrganizationChart from "@dabeng/react-orgchart";
 
 
  
@@ -8,6 +9,7 @@ import { socket } from './socket'
 function App() {
     const [isConnected, setIsConnected] = useState(socket.connected);
   const [time, setTime] = useState("");
+  const [nodeData, setNodeData] =useState({});
 
   useEffect(() => {
     function onConnect() {
@@ -21,15 +23,20 @@ function App() {
     function onTimeChangeEvent(value) {
       setTime(value);
     }
+    function onNodeDataChangeEvent(value){
+      setNodeData(value);
+    }
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('time', onTimeChangeEvent);
+    socket.on('node', onNodeDataChangeEvent);
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
-      socket.off('foo', onTimeChangeEvent);
+      socket.off('time', onTimeChangeEvent);
+      socket.off('node', onNodeDataChangeEvent);
     };
   }, []);
 
@@ -42,7 +49,7 @@ function App() {
         </p>
         <p>Time : {time}</p>
       </div>
-      
+  <OrganizationChart datasource={nodeData}    />
     </>
   )
 }
